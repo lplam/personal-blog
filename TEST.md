@@ -1,6 +1,38 @@
+# Nestjs repository
+
 #algorithm #leetcode
 
 **The problem**
+
+```tsx
+async update(@Body() body: UpdateUserDto, @Param('id') id: string) {
+    const { password, ...rest } = body;
+    const user = await this.userService.detail({ _id: id }, GET_USER_PROFILE_TYPE.full.name);
+    if (isEmpty(user)) {
+      throw new HttpException('Khách hàng không tồn tại', 200);
+    }
+
+    await this.userService.update({ _id: id }, rest);
+    const resPartner = await this.postgresErpService.resPartner({ where: { id: user.odoo_customer_id }, include: [{ model: ResUsers }] });
+
+    const userUpdated = await this.userService.detailAdminAggregate({ limit: 1, page: 1, _id: id });
+
+    if (password) {
+      const login = await this.loginService.detail({ users: id, type: LOGIN_TYPES['up'] });
+
+      if (isEmpty(login)) {
+        throw new HttpException('Tài khoản không có phương thức username/password', 200);
+      }
+
+      await this.passwordProcessService.setPassword({ login_id: login._id, password });
+    }
+
+    return {
+      ...userUpdated,
+      salesperson: resPartner?.salesperson || null,
+    };
+  }
+```
 
 Given two non-decreasing arrays `a` of length `m`, and `b` of length `n`. Merge the two arrays into array `a`. Since it’s an in-place merge, `a` has some extra spaces to fit the result.
 
@@ -12,61 +44,12 @@ Iterating from the end of both input arrays, at each iteration, pick the larger 
 
 Given two arrays **a** and **b** of length **m** and **n** as follow:
 
-$$ \\begin{align}
-a &= [ 1, 3, 5, 0, 0, 0 ] &m = 3 \\\\
-b &= [ 2, 4, 7 ] &n = 3 \\\\
-\\end{align} $$
-
-Let **k** be the last index of the merged array:
-
-$$ k = m + n - 1 $$
-
-Compare the two numbers $a[m-1]$ and $b[n-1]$ and insert the larger one into the end of the merged array (at position $a[k]$). After that, decrease the index $k$ and the value of $m$ or $n$ depending on which value is selected.
-
-Repeat the process until either $m$ or $n$ reach the beginning of the array.
-
----
-
-Here's how the algorithm running. From the beginning:
-
-$$ \\begin{align}
-a &= [ 1, 3, \\overset{\overset{m}\downarrow}{5}, 0, 0, \overset{\overset{k}\downarrow}{0} ] \\\\
-b &= [ 2, 4, \underset{\underset{n}\uparrow}{7} ] \\\\
-\\end{align} $$
-
-We have $a[m] = 5$, which is smaller than $b[n] = 7$. Move $b[n]$ into the position $a[k]$, decrease the value of both $n$ and $k$ by 1:
-
-$$ \\begin{align}
-a &= [ 1, 3, \overset{\overset{m}\downarrow}{5}, 0,  \overset{\overset{k}\downarrow}{0}, 7 ] \\\\
-b &= [ 2, \underset{\underset{n}\uparrow}{4}, \emptyset ] \\\\
-\\end{align} $$
-
-Now, $a[m] = 5$ is larger than $b[n] = 4$. Move $a[m]$ into $a[k]$ and decrease both $m$ and $k$ by 1:
-
-$$ \\begin{align}
-a &= [ 1, \overset{\overset{m}\downarrow}{3}, \emptyset,  \overset{\overset{k}\downarrow}{0}, 5, 7 ] \\\\
-b &= [ 2, \underset{\underset{n}\uparrow}{4}, \emptyset ] \\\\
-\\end{align} $$
-Next, $a[m] = 3$, less than $b[n] = 4$. Move $b[n]$ into $a[k]$ and decrease both $n$ and $k$:
-
-$$ \\begin{align}
-a &= [ 1, \overset{\overset{m}\downarrow}{3},  \overset{\overset{k}\downarrow}{\emptyset}, 4, 5, 7 ] \\\\
-b &= [ \underset{\underset{n}\uparrow}{2}, \emptyset, \emptyset ] \\\\
-\\end{align} $$
-
-Next, $a[m] = 3$, larger than $b[n] = 2$. Move $a[m]$ into $a[k]$ and decrease $m$ and $k$:
-
-$$ \\begin{align}
-a &= [ \overset{\overset{m}\downarrow}{1},  \overset{\overset{k}\downarrow}{\emptyset}, 3, 4, 5, 7 ] \\\\
-b &= [ \underset{\underset{n}\uparrow}{2}, \emptyset, \emptyset ] \\\\
-\\end{align} $$
-Finally, move $b[n]$ into $a[k]$ since $a[m] = 1$ is less than $b[n] = 2$, decreasing $n$ and $k$:
-
-$$ \\begin{align}
-a &= [ \overset{\overset{m,k}\downarrow}{1}, 2, 3, 4, 5, 7 ] \\\\
-b &= \underset{\underset{n}\uparrow}{[} \emptyset, \emptyset, \emptyset ] \\\\
-\\end{align} $$
-
-At this point, we reach the end of the algorithm, the merged result is:
-
-$$ a = [1, 2, 3, 4, 5, 7] $$
+```rust
+pub fn readInputFile(allocator: std.mem.Allocator) ![]const u8 {
+    const file = try std.fs.cwd().openFile("input.txt", .{});
+    defer file.close();
+    const stat = try file.stat();
+    const fileSize = stat.size;
+    return try file.reader().readAllAlloc(allocator, fileSize);
+}
+```
