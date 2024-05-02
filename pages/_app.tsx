@@ -11,7 +11,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <Fragment>
-      <Head>
+      {/* <Head>
         <title>abc.test/{page ? "/" + page : ""}</title>
         <link rel="icon" href="/favicon.ico" />
         <script
@@ -30,12 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           rel="stylesheet"
         />
         <link rel="stylesheet" href="https://use.typekit.net/nme2fxj.css" />
-        {/* <script
-          defer
-          data-domain="abc.test"
-          src="https://analytics.abc.test/js/script.js"
-        ></script> */}
-      </Head>
+      </Head> */}
       <div className="flex justify-center items-center bg-stone-100 h-16 font-serif">
         <div className="container-center center-horizontal text-stone-500 font-bold font-mono text-sm">
           <Link href="/">
