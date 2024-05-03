@@ -81,7 +81,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     }
   } else {
     // List all posts
-    if (repo === "everyday") {
+    if (repo === "blogs") {
       type PostEntry = {
         date: string;
         title: string;

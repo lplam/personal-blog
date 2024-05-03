@@ -31,7 +31,7 @@ const Home: NextPage = () => {
             My portfolio
           </div>
           <div
-            onClick={() => router.push("/everyday")}
+            onClick={() => router.push("/blogs")}
             className="col-span-1 w-full h-12 flex items-center justify-center bg-green-200 rounded-lg cursor-pointer animate-pulse font-semibold"
           >
             My Blog

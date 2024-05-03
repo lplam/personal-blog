@@ -81,7 +81,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
 
   ctx.font = "bold 40px" + " " + fontString;
   ctx.fillStyle = "#483F47";
-  ctx.fillText("/everyday", 260, 100);
+  ctx.fillText("/blogs", 260, 100);
 
   ctx.font = "bold 32px" + " " + fontMonoString;
   ctx.fillStyle = "#9a8c98";

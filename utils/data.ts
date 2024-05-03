@@ -19,11 +19,11 @@ export const DataService = {
   allProjects: async (): Promise<Project[]> => {
     let result: Project[] = [];
     for (let project of ENABLED_PROJECTS) {
-      // const res = await fetch(
-      //   `https://raw.githubusercontent.com/lplam/${project}/master/DEVLOG.md`
-      // );
-      // const data = await res.text();
-      const data = fs.readFileSync("TEST.md", "utf-8");
+      const res = await fetch(
+        `https://raw.githubusercontent.com/lplam/${project}/master/DEVLOG.md`
+      );
+      const data = await res.text();
+      // const data = fs.readFileSync("TEST.md", "utf-8");
       result.push({
         name: project,
         content: data,
@@ -60,7 +60,6 @@ export const DataService = {
   },
   allPosts: async (): Promise<Day[]> => {
     const projects = await DataService.allProjects();
-    // console.log("proo: ", projects);
     const result = await Promise.all(
       projects.map(DataService.allPostsOfProject)
     );
