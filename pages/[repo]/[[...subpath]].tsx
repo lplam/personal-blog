@@ -29,7 +29,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   let repo = context.params?.repo ?? null;
   let rest = context.params?.subpath ?? null;
 
-  // console.log("------repo, rest: ", repo, rest);
   let subpath = "";
   let reload = false;
   if (rest?.length) {
@@ -49,15 +48,18 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const days = await DataService.allPosts();
   if (subpath) {
-    console.log("sub: ", subpath);
     // Subpath is requested
+    console.log("subpath: ", subpath, days);
     const matchedIndex = days.findIndex((day) => day?.slug.match(subpath));
     if (matchedIndex !== -1) {
       // Found the matched post
       const matchedDay = days[matchedIndex];
       postTitle = matchedDay?.title ?? "";
-      const [postedDate, displayTitle] = postTitle.split(" - ");
-      markdown = `<span class="arrow pull-back font-mono text-stone-500 text-sm">←</span> <a class="font-mono text-stone-500 text-sm" href="/${repo}">All posts</a>\n\n# ${displayTitle}\n<div class="desc text-stone-500 font-mono text-sm">Posted On ${postedDate}</div>\n\n${matchedDay!.tokens.join(
+      // const postDate = matchedDay.
+      // const [postedDate, displayTitle] = postTitle.split(" - ");
+      const postedDate = "2024, Dec - 20";
+      const displayTitle = postTitle;
+      markdown = `\n\n# ${displayTitle}\n<div class="desc text-stone-500 font-mono text-sm">Posted On ${postedDate}</div>\n\n${matchedDay!.tokens.join(
         ""
       )}`;
       const otherStart = Math.max(matchedIndex - 3, 0);
@@ -88,12 +90,15 @@ export const getStaticProps: GetStaticProps = async (context) => {
         slug: string;
       };
 
+      console.log("days ne: ", days);
       const posts: PostEntry[] = days
         .filter((day) => day.project === repo)
         .map((day) => {
-          const [date, fullTitle] = day.title.split(" - ");
-          let [category, ...titleParts] = fullTitle?.split("/");
-          let title = titleParts.join("/");
+          const date = "22-02-2024";
+          const fullTitle = day.title;
+          const category = "category";
+          let titleParts = fullTitle;
+          let title = titleParts;
           return {
             date,
             title,
@@ -103,34 +108,13 @@ export const getStaticProps: GetStaticProps = async (context) => {
           };
         });
 
-      markdown = `## Recently Added\n\n${posts
+      markdown = `\n\n${posts
         .slice(0, 7)
         .map(
           (post) =>
             `<span class="block md:inline-block mt-3 md:mt-0 post-date">${post.date}</span> [${post.fullTitle}](/${repo}/${post.slug})`
         )
         .join("\n")}`;
-
-      const categories = posts.reduce((map: Map<string, PostEntry[]>, post) => {
-        const key = post.category.toUpperCase();
-        let list = map.get(key);
-        if (list !== undefined) {
-          list.push(post);
-        } else {
-          map.set(key, [post]);
-        }
-        return map;
-      }, new Map());
-
-      markdown += "\n\n## Posts by categories\n";
-      categories.forEach((posts, key) => {
-        markdown += `\n\n### ${key}\n\n${posts
-          .map(
-            (post) =>
-              `<span class="block md:inline-block mt-3 md:mt-0 post-date">${post.date}</span> [${post.title}](/${repo}/${post.slug})`
-          )
-          .join("\n")}`;
-      });
     } else {
       markdown = days
         .filter((day) => day.project === repo)
@@ -183,14 +167,14 @@ const Devlog: NextPage = ({
   repo,
   subpath,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  hljs.addPlugin(
-    new LineFocusPlugin({
-      unfocusedStyle: {
-        opacity: "0.35",
-        filter: "grayscale(1)",
-      },
-    })
-  );
+  // hljs.addPlugin(
+  //   new LineFocusPlugin({
+  //     unfocusedStyle: {
+  //       opacity: "0.35",
+  //       filter: "grayscale(1)",
+  //     },
+  //   })
+  // );
 
   marked.setOptions({
     gfm: true,
@@ -202,68 +186,7 @@ const Devlog: NextPage = ({
     },
   });
 
-  // const customRenderer = {
-  //   heading: function (text: string, level: 1 | 2 | 3 | 4 | 5 | 6) {
-  //     var escapedText = text.toLowerCase().replace(/[^\w]+/g, "-");
-  //     if (level === 1) {
-  //       const titleText = text.replace("/", " / ");
-  //       return (
-  //         "<h" +
-  //         level +
-  //         '><a class="font-bold" name="' +
-  //         escapedText +
-  //         '" href="/' +
-  //         repo +
-  //         "/" +
-  //         escapedText +
-  //         '">' +
-  //         titleText +
-  //         "</a></h" +
-  //         level +
-  //         ">"
-  //       );
-  //     } else {
-  //       return (
-  //         "<h" +
-  //         level +
-  //         '><a class="font-bold" name="' +
-  //         escapedText +
-  //         '" href="#' +
-  //         escapedText +
-  //         '">' +
-  //         text +
-  //         "</a></h" +
-  //         level +
-  //         ">"
-  //       );
-  //     }
-  //   },
-  //   link(href: string, title: string, text: string) {
-  //     if (href.startsWith("http") && href.indexOf(SITE_URL) === -1) {
-  //       return `<a class="external-link" href='${href}' target="_blank" rel="noopener">${text}</a><sup class="arrow link">&urtri;</sup>`;
-  //     }
-  //     return false;
-  //   },
-  // };
-
-  // marked.use({ renderer: customRenderer });
-
   let content = marked.parse(markdown);
-  content = content.replace(
-    /src=\"(.\/)?/g,
-    `src="https://raw.githubusercontent.com/lplam/${repo}/master/`
-  );
-
-  const loadScript = `
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$']]
-      },
-      svg: {
-        fontCache: 'global'
-      }
-    };
-  `;
 
   const pageTitle = postTitle ? `${postTitle}` : "abc.test/" + repo;
   const description =
@@ -295,16 +218,15 @@ const Devlog: NextPage = ({
       />
       <main className="container-center my-10">
         {!subpath && (
-          <>
-            <h1 className="font-bold text-4xl mt-10 border-none font-title">
-              <Link href={`/${repo}`}>{repo}</Link>: Development Log
-            </h1>
-            <div className="my-2 text-stone-500 font-mono text-sm">
-              <Link href={`https://github.com/lplam/${repo}`}>
-                <a className="hover:underline">GitHub Repository</a>
-              </Link>
-            </div>
-          </>
+          <div className="relative">
+            <input
+              className="w-full h-12 rounded-xl search-color placeholder:font-medium placeholder:text-white pl-5 text-white font-medium text-xl font-mono"
+              placeholder="Search something..."
+            />
+            <span className="material-symbols-outlined absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2 text-white animate-pulse text-3xl">
+              search
+            </span>
+          </div>
         )}
         <div
           className={`github-theme my-10 ${

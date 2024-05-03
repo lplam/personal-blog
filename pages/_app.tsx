@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const page = pageProps?.repo ?? "";
-  console.log("pageProps: ", pageProps);
+  // console.log("pageProps: ", pageProps);
   const router = useRouter();
 
   return (
@@ -23,10 +23,20 @@ function MyApp({ Component, pageProps }: AppProps) {
           crossOrigin={""}
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Overpass+Mono&family=Rozha+One&family=Spectral:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet"
         />
-        <link rel="stylesheet" href="https://use.typekit.net/nme2fxj.css" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap"
+          rel="stylesheet"
+        />
+
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+
+        {/* <link rel="stylesheet" href="https://use.typekit.net/nme2fxj.css" /> */}
       </Head>
       <div className="flex justify-center items-center bg-stone-100 h-16 font-serif">
         <div className="container-center justify-between center-horizontal text-stone-500 font-bold font-mono text-sm">
@@ -36,7 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Link>
           </div>
           <button
-            className="animate-pulse inline-block"
+            className="animate-pulse inline-block text-blue-400"
             type="button"
             onClick={router.back}
           >
@@ -45,7 +55,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </div>
       </div>
       <Component {...pageProps} />
-      <footer className="flex font-mono justify-center items-center h-16 bg-stone-100 text-stone-500 text-sm">
+      <footer className="flex font-mono justify-center items-center h-16 bg-stone-100 text-stone-500 text-sm fixed bottom-0 w-full">
         <div className="container-center center-horizontal flex justify-between">
           <p>Contact me:</p>
           <a

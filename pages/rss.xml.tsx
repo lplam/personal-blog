@@ -8,10 +8,10 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   if (res) {
     const feed = new Feed({
       title: "abc.test",
-      description: "Huy's development blog",
+      description: "",
       id: "https://abc.test",
       link: "https://abc.test",
-      copyright: "All rights reserved 2022, Huy Tran",
+      copyright: "",
       language: "en",
     });
 
